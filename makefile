@@ -4,7 +4,7 @@ all: $(patsubst %, figure%.svg, $(flist))
 
 # Figure rules
 figure%.svg: venv genFigure.py cptactensor/figures/figure%.py
-. venv/bin/activate && ./genFigure.py $*
+	. venv/bin/activate && ./genFigure.py $*
 
 venv: venv/bin/activate
 
