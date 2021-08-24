@@ -1,11 +1,12 @@
 import pandas as pd
 import numpy as np
 from tensorly.decomposition import parafac
+from .common import subplotLabel, getSetup
 #add all patients in any tensors as nans
 
 
 def generate_tensors():
-    path = 'msresist/data/MS/CPTAC/'
+    path = ''
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
@@ -75,10 +76,38 @@ def generate_tensors():
     clust_tensor = np.array([c_tumor[patients].T.values, c_nat[n_patients].T.values]).astype('float')
     return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
 
+def gene_match_tensors():
+    prot = pd.read_csv('prot.csv')
+    mrna = pd.read_csv('mRNA.csv')
+    mrna_matrix = []
+    prot_matrix = []
+    geneSet = set(mrna['geneSymbol']).intersection(set(prot['geneSymbol']))
+    for geneSymbol in geneSet:
+        prot_matrix.append(np.array(prot[prot['geneSymbol'] == geneSymbol].iloc[0][2:], dtype = 'float'))
+        mrna_matrix.append(np.array(mrna[mrna['geneSymbol'] == geneSymbol].iloc[0][3:], dtype = 'float'))
+    tensor = np.array([np.array(mrna_matrix), np.array(prot_matrix)])
+    return tensor
+
 def makeFigure():
+    ax, f = getSetup((12,5), (3,3))
     sample_type , patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters) = generate_tensors()
     clust_fact = parafac(np.nan_to_num(clust_tensor, 0),rank = 3, mask = np.isfinite(clust_tensor), normalize_factors = True)
-    mRNA_fact = parafac(np.nan_to_num(mRNA_tensor, 0),rank = 3, mask = np.isfinite(mRNA_tensor), normalize_factors = True)
-    prot_fact = parafac(np.nan_to_num(prot_tensor, 0),rank = 3, mask = np.isfinite(prot_tensor), normalize_factors = True)
+    #mRNA_fact = parafac(np.nan_to_num(mRNA_tensor, 0),rank = 3, mask = np.isfinite(mRNA_tensor), normalize_factors = True)
+    #prot_fact = parafac(np.nan_to_num(prot_tensor, 0),rank = 3, mask = np.isfinite(prot_tensor), normalize_factors = True)
 
+    for fact in range(3):
+        ax[fact*3].plot(clust_fact[1][0].T[fact])
+        ax[fact*3].set_xticks(range(len(sample_type)))
+        ax[fact*3].set_xticklabels( sample_type)
 
+    for fact in range(3):
+        ax[fact*3+1].plot(clust_fact[1][1].T[fact])
+        #ax[fact*3+1].set_xticks(range(len(patients)))
+        #ax[fact*3+1].set_xticklabels( patients, rotation = 90)
+
+    for fact in range(3):
+        ax[fact*3+2].plot(clust_fact[1][2].T[fact])
+        ax[fact*3+2].set_xticks(range(len(clusters)))
+        ax[fact*3+2].set_xticklabels(clusters)
+
+    return f
