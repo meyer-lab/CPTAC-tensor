@@ -6,7 +6,7 @@ from .common import subplotLabel, getSetup
 
 
 def generate_tensors():
-    path = ''
+    path = 'data/'
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
@@ -77,11 +77,12 @@ def generate_tensors():
     return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
 
 def gen_match_tensors():
-    prot_data = pd.read_csv('prot.csv')
+    path = 'data/'
+    prot_data = pd.read_csv(path+'CPTAC_LUAD_Protein.csv')
     prot_data.index = prot_data['geneSymbol']
-    mRNA_data = pd.read_csv('mRNA.csv')
+    mRNA_data = pd.read_csv(path+'CPTAC_LUAD_RNAseq.csv')
     mRNA_data.index = mRNA_data['geneSymbol']
-    clust_data = pd.read_csv('/Users/lukakarginov/Documents/Meyer Lab/resistance-MS/CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
+    clust_data = pd.read_csv(path+'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     clust_data.index = clust_data['Patient_ID']
     clust_data.drop(clust_data.columns[0:2],axis = 1, inplace = True)
     clust_data = clust_data.T
