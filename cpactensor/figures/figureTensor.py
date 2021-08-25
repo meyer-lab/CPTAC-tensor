@@ -76,17 +76,30 @@ def generate_tensors():
     clust_tensor = np.array([c_tumor[patients].T.values, c_nat[n_patients].T.values]).astype('float')
     return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
 
-def gene_match_tensors():
-    prot = pd.read_csv('prot.csv')
-    mrna = pd.read_csv('mRNA.csv')
+def gen_match_tensors():
+    prot_data = pd.read_csv('prot.csv')
+    mRNA_data = pd.read_csv('mRNA.csv')
+    clust_data = pd.read_csv('/Users/lukakarginov/Documents/Meyer Lab/resistance-MS/CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
+    clust_data.index = clust_data['Patient_ID']
+    clust_data.drop(clust_data.columns[0:2],axis = 1, inplace = True)
+    clust_data = clust_data.T
+    
+    m_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in mRNA_data.columns])
+    p_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in prot_data.columns])
+    c_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in clust_data.columns])
+    patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
+    
     mrna_matrix = []
     prot_matrix = []
-    geneSet = set(mrna['geneSymbol']).intersection(set(prot['geneSymbol']))
+    geneSet = set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol']))
     for geneSymbol in geneSet:
-        prot_matrix.append(np.array(prot[prot['geneSymbol'] == geneSymbol].iloc[0][2:], dtype = 'float'))
-        mrna_matrix.append(np.array(mrna[mrna['geneSymbol'] == geneSymbol].iloc[0][3:], dtype = 'float'))
-    tensor = np.array([np.array(mrna_matrix), np.array(prot_matrix)])
-    return tensor
+        prot_matrix.append(np.array(prot_data[prot_data['geneSymbol'] == geneSymbol][patients].iloc[0], dtype = 'float'))
+        mrna_matrix.append(np.array(mRNA_data[mRNA_data['geneSymbol'] == geneSymbol][patients].iloc[0], dtype = 'float'))
+    tensor = np.array([np.array(mrna_matrix).T, np.array(prot_matrix).T])
+
+
+    matrix = clust_data[patients].T.values
+    return (tensor, list(geneSet)), (matrix, np.arange(1,25)), patients, ['mRNA', 'Protein']
 
 def makeFigure():
     ax, f = getSetup((12,5), (3,3))
