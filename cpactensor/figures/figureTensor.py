@@ -78,7 +78,9 @@ def generate_tensors():
 
 def gen_match_tensors():
     prot_data = pd.read_csv('prot.csv')
+    prot_data.index = prot_data['geneSymbol']
     mRNA_data = pd.read_csv('mRNA.csv')
+    mRNA_data.index = mRNA_data['geneSymbol']
     clust_data = pd.read_csv('/Users/lukakarginov/Documents/Meyer Lab/resistance-MS/CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     clust_data.index = clust_data['Patient_ID']
     clust_data.drop(clust_data.columns[0:2],axis = 1, inplace = True)
@@ -89,13 +91,11 @@ def gen_match_tensors():
     c_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in clust_data.columns])
     patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
     
-    mrna_matrix = []
-    prot_matrix = []
-    geneSet = set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol']))
-    for geneSymbol in geneSet:
-        prot_matrix.append(np.array(prot_data[prot_data['geneSymbol'] == geneSymbol][patients].iloc[0], dtype = 'float'))
-        mrna_matrix.append(np.array(mRNA_data[mRNA_data['geneSymbol'] == geneSymbol][patients].iloc[0], dtype = 'float'))
-    tensor = np.array([np.array(mrna_matrix).T, np.array(prot_matrix).T])
+
+    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+    mrna_matrix = mRNA_data.loc[geneSet][patients].values
+    prot_matrix = prot_data.loc[geneSet].drop_duplicates(subset = ['geneSymbol'])[patients].values
+    tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype = float)
 
 
     matrix = clust_data[patients].T.values
