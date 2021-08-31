@@ -105,11 +105,9 @@ def gen_4D_3D_tensors():
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
 
     #prot import
-    prot_data = prot_data[prot_data.columns[17:]]
     mRNA_data.index = mRNA_data['geneSymbol']
 
     #mRNA import
-    mRNA_data = mRNA_data[mRNA_data.columns[6:]]
     mRNA_data.index = mRNA_data['geneSymbol']
 
     #clust import
