@@ -105,7 +105,7 @@ def gen_4D_3D_tensors():
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
 
     #prot import
-    mRNA_data.index = mRNA_data['geneSymbol']
+    prot_data.index = prot_data['geneSymbol']
 
     #mRNA import
     mRNA_data.index = mRNA_data['geneSymbol']
@@ -129,22 +129,38 @@ def gen_4D_3D_tensors():
 
     #setting up mRNA tumor and normal df
     m_tumor= mRNA_data[m_set.intersection(set(patients))].loc[geneSet]
+    for col in set(patients).difference(set(m_tumor.columns)):
+            m_tumor.insert(0,col, [np.nan for _ in range(len(m_tumor.index))])
+
     m_nat = mRNA_data.filter(regex = 'N$')
     m_nat = m_nat[set(m_nat.columns).intersection(set(n_patients))].loc[geneSet]
+    for col in set(n_patients).difference(set(m_nat.columns)):
+        m_nat.insert(0,col, [np.nan for _ in range(len(m_nat.index))])
 
     #setting up protein tumor and normal df
-    p_tumor= prot_data[p_set.intersection(set(patients))].loc[geneSet].drop_duplicates(subset = ['geneSymbol']).values
-    p_nat = prot_data.filter(regex = 'N$')
-    p_nat = p_nat[set(p_nat.columns).intersection(set(n_patients))].loc[geneSet].drop_duplicates(subset = ['geneSymbol']).values
+    p_tumor= prot_data.loc[geneSet]
+    p_tumor= p_tumor[~p_tumor.index.duplicated(keep = 'first')][p_set.intersection(set(patients))]
+    for col in set(patients).difference(set(p_tumor.columns)):
+        p_tumor.insert(0,col, [np.nan for _ in range(len(p_tumor.index))])
+
+    p_nat = prot_data.filter(regex = 'N$').loc[geneSet]
+    p_nat = p_nat[~p_nat.index.duplicated(keep = 'first')][set(p_nat.columns).intersection(set(n_patients))]
+    for col in set(n_patients).difference(set(p_nat.columns)):
+        p_nat.insert(0,col, [np.nan for _ in range(len(p_nat.index))])
 
     #setting up cluster tumor and normal df
-    c_tumor= clust_data[c_set.intersection(set(patients))]     
+    c_tumor= clust_data[c_set.intersection(set(patients))]
+    for col in set(patients).difference(set(c_tumor.columns)):
+        c_tumor.insert(0,col, [np.nan for _ in range(len(c_tumor.index))])
+
     c_nat = clust_data.filter(regex = 'N$')
     c_nat = c_nat[set(c_nat.columns).intersection(set(n_patients))]
+    for col in set(n_patients).difference(set(c_nat.columns)):
+        c_nat.insert(0,col, [np.nan for _ in range(len(c_nat.index))])
 
     #building tensors
-    mRNA_prot_tensor = np.array([[m_tumor.T, m_nat.T],[p_tumor.T, p_nat.T]], dtype = float)
-    clust_tensor = np.array([c_tumor, c_nat], dtype = float)
+    mRNA_prot_tensor = np.array([[m_tumor.values.T, m_nat.values.T],[p_tumor.values.T, p_nat.values.T]], dtype = float)
+    clust_tensor = np.array([c_tumor.values, c_nat.values], dtype = float)
 
     return (mRNA_prot_tensor, patients, list(geneSet), ['tumor', 'normal'], ['mRNA','protein']), (clust_tensor, patients, np.arange(1,25), ['tumor', 'normal'])
 
