@@ -98,8 +98,57 @@ def gen_tensor_matrix():
     matrix = clust_data[patients].T.values
     return (tensor, list(geneSet)), (matrix, np.arange(1,25)), patients, ['mRNA', 'Protein']
 
-def gen_tvn_tensors():
-    
+def gen_4D_3D_tensors():
+    path = 'data/'
+    clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
+    prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
+    mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
+
+    #prot import
+    prot_data = prot_data[prot_data.columns[17:]]
+    mRNA_data.index = mRNA_data['geneSymbol']
+
+    #mRNA import
+    mRNA_data = mRNA_data[mRNA_data.columns[6:]]
+    mRNA_data.index = mRNA_data['geneSymbol']
+
+    #clust import
+    clust_data.index = clust_data['Patient_ID']
+    clust_data.drop(clust_data.columns[0:2],axis = 1, inplace = True)
+    clust_data = clust_data.T
+
+    #getting complete sorted list of all patients
+    m_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in mRNA_data.columns])
+    p_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in prot_data.columns])
+    c_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in clust_data.columns])
+    patients = sorted(list(m_set.intersection(p_set, c_set)))
+
+    #converting patient tumor string to normal
+    n_patients= [patient+'.N' for patient in patients]
+
+    #getting list of genes in common between mRNA and prot datasets
+    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+
+    #setting up mRNA tumor and normal df
+    m_tumor= mRNA_data[m_set.intersection(set(patients))].loc[geneSet]
+    m_nat = mRNA_data.filter(regex = 'N$')
+    m_nat = m_nat[set(m_nat.columns).intersection(set(n_patients))].loc[geneSet]
+
+    #setting up protein tumor and normal df
+    p_tumor= prot_data[p_set.intersection(set(patients))].loc[geneSet].drop_duplicates(subset = ['geneSymbol']).values
+    p_nat = prot_data.filter(regex = 'N$')
+    p_nat = p_nat[set(p_nat.columns).intersection(set(n_patients))].loc[geneSet].drop_duplicates(subset = ['geneSymbol']).values
+
+    #setting up cluster tumor and normal df
+    c_tumor= clust_data[c_set.intersection(set(patients))]     
+    c_nat = clust_data.filter(regex = 'N$')
+    c_nat = c_nat[set(c_nat.columns).intersection(set(n_patients))]
+
+    #building tensors
+    mRNA_prot_tensor = np.array([[m_tumor.T, m_nat.T],[p_tumor.T, p_nat.T]], dtype = float)
+    clust_tensor = np.array([c_tumor, c_nat], dtype = float)
+
+    return (mRNA_prot_tensor, patients, list(geneSet), ['tumor', 'normal'], ['mRNA','protein']), (clust_tensor, patients, np.arange(1,25), ['tumor', 'normal'])
 
 def makeFigure():
     ax, f = getSetup((12,5), (3,3))
