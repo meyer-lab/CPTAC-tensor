@@ -162,7 +162,7 @@ def gen_4D_3D_tensors():
     mRNA_prot_tensor = np.array([[m_tumor.values.T, m_nat.values.T],[p_tumor.values.T, p_nat.values.T]], dtype = float)
     clust_tensor = np.array([c_tumor.values, c_nat.values], dtype = float)
 
-    return (mRNA_prot_tensor, patients, list(geneSet), ['tumor', 'normal'], ['mRNA','protein']), (clust_tensor, patients, np.arange(1,25), ['tumor', 'normal'])
+    return (mRNA_prot_tensor, patients, geneSet, ['tumor', 'normal'], ['mRNA','protein']), (clust_tensor, patients, np.arange(1,25), ['tumor', 'normal'])
 
 def makeFigure():
     ax, f = getSetup((12,5), (3,3))
