@@ -77,6 +77,7 @@ def generate_tensors():
     return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
 
 def gen_tensor_matrix():
+    # data import
     path = 'data/'
     prot_data = pd.read_csv(path+'CPTAC_LUAD_Protein.csv')
     prot_data.index = prot_data['geneSymbol']
@@ -86,16 +87,19 @@ def gen_tensor_matrix():
     clust_data.index = clust_data['Patient_ID']
     clust_data.drop(clust_data.columns[0:2],axis = 1, inplace = True)
     clust_data = clust_data.T
+    
+    #generating patient set
     patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
     
-
+    #generating gene set
     geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+
+    #building  matrices
     mrna_matrix = mRNA_data.loc[geneSet][patients].values
     prot_matrix = prot_data.loc[geneSet].drop_duplicates(subset = ['geneSymbol'])[patients].values
     tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype = float)
-
-
     matrix = clust_data[patients].T.values
+    
     return (tensor, list(geneSet)), (matrix, np.arange(1,25)), patients, ['mRNA', 'Protein']
 
 def gen_4D_3D_tensors():
