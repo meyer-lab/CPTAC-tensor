@@ -76,7 +76,33 @@ def generate_tensors():
     clust_tensor = np.array([c_tumor[patients].T.values, c_nat[n_patients].T.values]).astype('float')
     return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
 
-def gen_match_tensors():
+def gen_tensor_matrix():
+    path = 'data/'
+    prot_data = pd.read_csv(path+'CPTAC_LUAD_Protein.csv')
+    prot_data.index = prot_data['geneSymbol']
+    mRNA_data = pd.read_csv(path+'CPTAC_LUAD_RNAseq.csv')
+    mRNA_data.index = mRNA_data['geneSymbol']
+    clust_data = pd.read_csv(path+'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
+    clust_data.index = clust_data['Patient_ID']
+    clust_data.drop(clust_data.columns[0:2],axis = 1, inplace = True)
+    clust_data = clust_data.T
+    
+    m_set = set([patient for patient in mRNA_data.columns])
+    p_set = set([patient for patient in prot_data.columns])
+    c_set = set([patient for patient in clust_data.columns])
+    patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
+    
+
+    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+    mrna_matrix = mRNA_data.loc[geneSet][patients].values
+    prot_matrix = prot_data.loc[geneSet].drop_duplicates(subset = ['geneSymbol'])[patients].values
+    tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype = float)
+
+
+    matrix = clust_data[patients].T.values
+    return (tensor, list(geneSet)), (matrix, np.arange(1,25)), patients, ['mRNA', 'Protein']
+
+def gen_tvn_tensors():
     path = 'data/'
     prot_data = pd.read_csv(path+'CPTAC_LUAD_Protein.csv')
     prot_data.index = prot_data['geneSymbol']
