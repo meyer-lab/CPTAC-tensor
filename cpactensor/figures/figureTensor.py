@@ -163,8 +163,8 @@ def gen_4D_3D_tensors():
         c_nat.insert(0,col, [np.nan for _ in range(len(c_nat.index))])
 
     #building tensors
-    mRNA_prot_tensor = np.array([[m_tumor.values.T, m_nat.values.T],[p_tumor.values.T, p_nat.values.T]], dtype = float)
-    clust_tensor = np.array([c_tumor.values.T, c_nat.values.T], dtype = float)
+    mRNA_prot_tensor = np.array([[m_tumor[patients].values.T, m_nat[n_patients].values.T],[p_tumor[patients].values.T, p_nat[n_patients].values.T]], dtype = float)
+    clust_tensor = np.array([c_tumor[patients].values.T, c_nat[n_patients].values.T], dtype = float)
 
     return (mRNA_prot_tensor,  geneSet, patients, ['tumor', 'normal'], ['mRNA','protein']), (clust_tensor, np.arange(1,25),  patients, ['tumor', 'normal'])
 
