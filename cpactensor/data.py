@@ -96,7 +96,7 @@ def gen_tensor_matrix():
 
     # building  matrices
     mrna_matrix = mRNA_data.loc[geneSet][patients].values
-    prot_matrix = prot_data.loc[geneSet].drop_duplicates(subset=['geneSymbol'])[patients].values
+    prot_matrix = prot_data.loc[~prot_data.index.duplicated(keep='first')].loc[geneSet][patients].values
     tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype=float)
     matrix = clust_data[patients].T.values
 
