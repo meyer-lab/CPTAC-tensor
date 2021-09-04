@@ -8,12 +8,10 @@ def generate_tensors():
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
 
     # prot import
-    # prot_data.columns = np.asarray(prot_data.iloc[1])
     prot_data.index = np.array(prot_data['id'])
     prot_data = prot_data[prot_data.columns[17:]]
 
     # mRNA import
-    # mRNA_data.columns = np.asarray(mRNA_data.iloc[1])
     mRNA_data.index = np.array(mRNA_data['gene_id'])
     mRNA_data = mRNA_data[mRNA_data.columns[6:]]
 
@@ -72,12 +70,19 @@ def generate_tensors():
 
 
 def gen_tensor_matrix():
-    # data import
     path = 'data/'
+
+    #prot import
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     prot_data.index = prot_data['geneSymbol']
+    prot_data = prot_data[prot_data.columns[17:]]
+
+    #mRNA import
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
     mRNA_data.index = mRNA_data['geneSymbol']
+    mRNA_data = mRNA_data[mRNA_data.columns[6:]]
+
+    #clust import
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     clust_data.index = clust_data['Patient_ID']
     clust_data.drop(clust_data.columns[0:2], axis=1, inplace=True)
@@ -106,9 +111,11 @@ def gen_4D_3D_tensors():
 
     # prot import
     prot_data.index = prot_data['geneSymbol']
+    prot_data = prot_data[prot_data.columns[17:]]
 
     # mRNA import
     mRNA_data.index = mRNA_data['geneSymbol']
+    mRNA_data = mRNA_data[mRNA_data.columns[6:]]
 
     # clust import
     clust_data.index = clust_data['Patient_ID']
