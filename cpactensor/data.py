@@ -100,7 +100,7 @@ def gen_tensor_matrix():
     tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype=float)
     matrix = clust_data[patients].T.values
 
-    return (tensor, geneSet, patients, ['mRNA', 'Protein']), (matrix, clust_data.index, patients, ['mRNA', 'Protein'])
+    return (tensor, geneSet, patients, ['mRNA', 'Protein']), (matrix, clust_data.index, patients)
 
 
 def gen_4D_3D_tensors():
