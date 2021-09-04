@@ -6,7 +6,7 @@ from ..data import generate_tensors
 
 def makeFigure():
     ax, f = getSetup((12,5), (3,3))
-    sample_type , patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters) = generate_tensors()
+    (mRNA_tensor, genes, patients, sample_type), (prot_tensor, proteins, patients, sample_type), (clust_tensor, clusters, patients, sample_type) = generate_tensors()
     clust_fact = parafac(np.nan_to_num(clust_tensor, 0),rank = 3, mask = np.isfinite(clust_tensor), normalize_factors = True)
     #mRNA_fact = parafac(np.nan_to_num(mRNA_tensor, 0),rank = 3, mask = np.isfinite(mRNA_tensor), normalize_factors = True)
     #prot_fact = parafac(np.nan_to_num(prot_tensor, 0),rank = 3, mask = np.isfinite(prot_tensor), normalize_factors = True)
