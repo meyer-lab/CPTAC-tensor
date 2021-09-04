@@ -66,7 +66,7 @@ def generate_tensors():
     mRNA_tensor = np.array([m_tumor[patients].T.values, m_nat[n_patients].T.values]).astype('float')
     prot_tensor = np.array([p_tumor[patients].T.values, p_nat[n_patients].T.values]).astype('float')
     clust_tensor = np.array([c_tumor[patients].T.values, c_nat[n_patients].T.values]).astype('float')
-    return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
+    return (mRNA_tensor, genes, patients, ['tumor', 'normal']), (prot_tensor, proteins, patients, ['tumor', 'normal']), (clust_tensor, clusters, patients, ['tumor', 'normal'])
 
 
 def gen_tensor_matrix():
@@ -100,7 +100,7 @@ def gen_tensor_matrix():
     tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype=float)
     matrix = clust_data[patients].T.values
 
-    return (tensor, list(geneSet)), (matrix, np.arange(1, 25)), patients, ['mRNA', 'Protein']
+    return (tensor, geneSet, patients, ['mRNA', 'Protein']), (matrix, clust_data.index, patients, ['mRNA', 'Protein'])
 
 
 def gen_4D_3D_tensors():
@@ -171,4 +171,4 @@ def gen_4D_3D_tensors():
     clust_tensor = np.array([c_tumor[patients].values.T, c_nat[n_patients].values.T], dtype=float)
 
     return (mRNA_prot_tensor, geneSet, patients, ['tumor', 'normal'], ['mRNA', 'protein']), (
-    clust_tensor, np.arange(1, 25), patients, ['tumor', 'normal'])
+    clust_tensor, clust_data.index, patients, ['tumor', 'normal'])
