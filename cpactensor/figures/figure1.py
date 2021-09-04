@@ -111,6 +111,6 @@ def CorrHeatmap(ax):
     clust_data.index = clust_data['Patient_ID']
     clust_data.drop(clust_data.columns[0:2], axis=1, inplace=True)
 
-    sns.heatmap(data=clust_data.corr(method = 'pearson'),vmin = -1, vmax = 1, cmap="RdBu", ax = ax)
+    sns.heatmap(data=clust_data.corr(method = 'pearson'),vmin = -1, vmax = 1, cmap="RdBu", ax = ax, cbar_kws={'label': 'Correlation'})
     ax.set_ylabel('Cluster')
     ax.set_xlabel('Cluster')
