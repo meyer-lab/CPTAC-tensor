@@ -92,7 +92,7 @@ def gen_tensor_matrix():
     patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
 
     # generating gene set
-    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+    geneSet = list(set(mRNA_data,index).intersection(set(prot_data.index)))
 
     # building  matrices
     mrna_matrix = mRNA_data.loc[geneSet][patients].values
@@ -132,7 +132,7 @@ def gen_4D_3D_tensors():
     n_patients = [patient + '.N' for patient in patients]
 
     # getting list of genes in common between mRNA and prot datasets
-    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+    geneSet = list(set(mRNA_data.index).intersection(set(prot_data.index)))
 
     # setting up mRNA tumor and normal df
     m_tumor = mRNA_data[m_set.intersection(set(patients))].loc[geneSet]
