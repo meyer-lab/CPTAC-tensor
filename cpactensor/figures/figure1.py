@@ -27,8 +27,9 @@ def makeFigure():
 
 def CorrViolin(ax):
     """ Generate grouped violin plot showing correlation distributions per RNA/prot expression levels across clusters. """
-    m_df = pd.read_csv('cptactensor/data/mRNA_Cluster_Correlations.csv')
-    p_df = pd.read_csv('cptactensor/data/prot_Cluster_Correlations.csv')
+    path = 'data/'
+    m_df = pd.read_csv(path+'mRNA_Cluster_Correlations.csv')
+    p_df = pd.read_csv(path+'prot_Cluster_Correlations.csv')
     m_df = m_df[m_df.index != 24]
     p_df = p_df[p_df.index != 24]
     corr = np.array([], dtype=float)
@@ -48,7 +49,7 @@ def CorrViolin(ax):
 
 def gen_csvs():
     """ Genereate phosphoproteomic cluster vs prot/RNA expression correlation. """
-    path = 'msresist/data/MS/CPTAC/'
+    path = 'data/'
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
@@ -103,7 +104,8 @@ def gen_csvs():
 
 def CorrHeatmap(ax):
     """ Correlation heatmap """
-    clust_data = pd.read_csv('cptactensor/data/CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
+    path = 'data/'
+    clust_data = pd.read_csv(path+'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
 
     #import
     clust_data.index = clust_data['Patient_ID']
