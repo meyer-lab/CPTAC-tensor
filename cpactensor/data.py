@@ -92,7 +92,7 @@ def gen_tensor_matrix():
     patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
 
     # generating gene set
-    geneSet = list(set(mRNA_data,index).intersection(set(prot_data.index)))
+    geneSet = list(set(mRNA_data.index).intersection(set(prot_data.index)))
 
     # building  matrices
     mrna_matrix = mRNA_data.loc[geneSet][patients].values
