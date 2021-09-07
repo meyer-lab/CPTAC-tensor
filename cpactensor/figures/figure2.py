@@ -13,7 +13,7 @@ def makeFigure():
 
     # Set plotting format
     sns.set(style="whitegrid", font_scale=1, color_codes=True, palette="colorblind", rc={"grid.linestyle": "dotted", "axes.linewidth": 0.6})
-    path = 'cptactensor/data/MS/CPTAC/'
+    path = 'data/'
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
 
     #import

@@ -8,14 +8,12 @@ def generate_tensors():
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
 
     # prot import
-    # prot_data.columns = np.asarray(prot_data.iloc[1])
     prot_data.index = np.array(prot_data['id'])
-    prot_data = prot_data[prot_data.columns[17:]]
+    prot_data = prot_data[prot_data.columns[2:]]
 
     # mRNA import
-    # mRNA_data.columns = np.asarray(mRNA_data.iloc[1])
     mRNA_data.index = np.array(mRNA_data['gene_id'])
-    mRNA_data = mRNA_data[mRNA_data.columns[6:]]
+    mRNA_data = mRNA_data[mRNA_data.columns[3:]]
 
     # clust import
     clust_data.index = clust_data['Patient_ID']
@@ -68,16 +66,23 @@ def generate_tensors():
     mRNA_tensor = np.array([m_tumor[patients].T.values, m_nat[n_patients].T.values]).astype('float')
     prot_tensor = np.array([p_tumor[patients].T.values, p_nat[n_patients].T.values]).astype('float')
     clust_tensor = np.array([c_tumor[patients].T.values, c_nat[n_patients].T.values]).astype('float')
-    return ['tumor', 'normal'], patients, (mRNA_tensor, genes), (prot_tensor, proteins), (clust_tensor, clusters)
+    return (mRNA_tensor, genes, patients, ['tumor', 'normal']), (prot_tensor, proteins, patients, ['tumor', 'normal']), (clust_tensor, clusters, patients, ['tumor', 'normal'])
 
 
 def gen_tensor_matrix():
-    # data import
     path = 'data/'
+
+    #prot import
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     prot_data.index = prot_data['geneSymbol']
+    prot_data = prot_data[prot_data.columns[2:]]
+
+    #mRNA import
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
     mRNA_data.index = mRNA_data['geneSymbol']
+    mRNA_data = mRNA_data[mRNA_data.columns[3:]]
+
+    #clust import
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     clust_data.index = clust_data['Patient_ID']
     clust_data.drop(clust_data.columns[0:2], axis=1, inplace=True)
@@ -87,15 +92,15 @@ def gen_tensor_matrix():
     patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
 
     # generating gene set
-    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+    geneSet = list(set(mRNA_data.index).intersection(set(prot_data.index)))
 
     # building  matrices
     mrna_matrix = mRNA_data.loc[geneSet][patients].values
-    prot_matrix = prot_data.loc[geneSet].drop_duplicates(subset=['geneSymbol'])[patients].values
+    prot_matrix = prot_data.loc[~prot_data.index.duplicated(keep='first')].loc[geneSet][patients].values
     tensor = np.array([mrna_matrix.T, prot_matrix.T], dtype=float)
     matrix = clust_data[patients].T.values
 
-    return (tensor, list(geneSet)), (matrix, np.arange(1, 25)), patients, ['mRNA', 'Protein']
+    return (tensor, geneSet, patients, ['mRNA', 'Protein']), (matrix, clust_data.index, patients)
 
 
 def gen_4D_3D_tensors():
@@ -106,9 +111,11 @@ def gen_4D_3D_tensors():
 
     # prot import
     prot_data.index = prot_data['geneSymbol']
+    prot_data = prot_data[prot_data.columns[2:]]
 
     # mRNA import
     mRNA_data.index = mRNA_data['geneSymbol']
+    mRNA_data = mRNA_data[mRNA_data.columns[3:]]
 
     # clust import
     clust_data.index = clust_data['Patient_ID']
@@ -125,7 +132,7 @@ def gen_4D_3D_tensors():
     n_patients = [patient + '.N' for patient in patients]
 
     # getting list of genes in common between mRNA and prot datasets
-    geneSet = list(set(mRNA_data['geneSymbol']).intersection(set(prot_data['geneSymbol'])))
+    geneSet = list(set(mRNA_data.index).intersection(set(prot_data.index)))
 
     # setting up mRNA tumor and normal df
     m_tumor = mRNA_data[m_set.intersection(set(patients))].loc[geneSet]
@@ -164,4 +171,4 @@ def gen_4D_3D_tensors():
     clust_tensor = np.array([c_tumor[patients].values.T, c_nat[n_patients].values.T], dtype=float)
 
     return (mRNA_prot_tensor, geneSet, patients, ['tumor', 'normal'], ['mRNA', 'protein']), (
-    clust_tensor, np.arange(1, 25), patients, ['tumor', 'normal'])
+    clust_tensor, clust_data.index, patients, ['tumor', 'normal'])
