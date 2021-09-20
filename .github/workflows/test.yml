@@ -22,9 +22,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pytest-cov
         pip install -r requirements.txt
-    - name: Test tensor functions
+    - name: Run tests
       run: |
         pytest --cov=cpactensor --cov-report=xml --cov-config=.github/workflows/coveragerc
+    - name: Run tensor decomposition
+      run: make tensor
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
