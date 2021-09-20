@@ -9,7 +9,7 @@ venv/bin/activate: requirements.txt
 	. venv/bin/activate && pip install --prefer-binary -Uqr requirements.txt
 	touch venv/bin/activate
 
-tensor: venv cpactensor/tensor.py
+tensor: cpactensor/tensor.py
 	. venv/bin/activate && ./cpactensor/tensor.py
 
 test: venv
