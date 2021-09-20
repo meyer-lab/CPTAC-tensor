@@ -26,7 +26,7 @@ jobs:
       run: |
         pytest --cov=cpactensor --cov-report=xml --cov-config=.github/workflows/coveragerc
     - name: Run tensor decomposition
-      run: make tensor
+      run: python ./cpactensor/tensor.py
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
