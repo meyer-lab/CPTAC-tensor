@@ -173,7 +173,22 @@ def gen_4D_3D_tensors():
     return (mRNA_prot_tensor, geneSet, patients, ['tumor', 'normal'], ['mRNA', 'protein']), (
     clust_tensor, clust_data.index, patients, ['tumor', 'normal'])
 
-def gen_concat_tensor():
+def gen_concat_tensor():    
+    """
+    Generate a concatenated tensor including:
+        mRNA expression: gene-level normalized RNAseq data 
+        protein expression: two-component normalized Log2 transformed protein expression
+        cluster centers
+
+    Returns:
+    (
+        concatenated tensor (Tumor vs. Normal) x (patients) x (observations),
+        gene ids, protein ids, or cluster numbers corresponding to tensor indices,
+        ids for patients corresponding to tensor indices, 
+        ids for TvN corresponding to tensor indices
+    )
+    """
+
     path = 'data/'
 
     #prot import
