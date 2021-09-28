@@ -200,15 +200,15 @@ def gen_concat_tensor():
     n_patients = [patient + '.N' for patient in patients]
 
     # building  matrices
-    tumor = mRNA_data[m_set.intersection(set(patients))]
+    tumor = mRNA_data[set(mRNA_data.columns).intersection(set(patients))]
     for col in set(patients).difference(set(tumor.columns)):
         tumor.insert(0, col, [np.nan for _ in range(len(tumor.index))])
         
-    prot_tumor = prot_data[p_set.intersection(set(patients))]
+    prot_tumor = prot_data[set(prot_data.columns).intersection(set(patients))]
     for col in set(patients).difference(set(prot_tumor.columns)):
         prot_tumor.insert(0, col, [np.nan for _ in range(len(prot_tumor.index))])
 
-    clust_tumor = clust_data[p_set.intersection(set(patients))]
+    clust_tumor = clust_data[set(clust_data.columns).intersection(set(patients))]
     for col in set(patients).difference(set(clust_tumor.columns)):
         clust_tumor.insert(0, col, [np.nan for _ in range(len(clust_tumor.index))])
 
