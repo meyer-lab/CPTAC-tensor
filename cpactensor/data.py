@@ -2,6 +2,35 @@ import pandas as pd
 import numpy as np
 
 def generate_tensors():
+    """
+    Generates a 3 tensors which share TvN and patient axes:
+        mRNA_tensor  (Tumor vs. Normal) x (patient) x (gene)
+        prot_tensor  (Tumor vs. Normal) x (patient) x (protein)
+        clust_tensor (Tumor vs. Normal) x (patient) x (cluster center)
+
+    Returns:
+    (
+        mRNA_tensor,
+        gene id corresponding to tensor indices,
+        id for patients corresponding to tensor indices, 
+        TvN corresponding to tensor indices
+    ),
+    (
+        prot_tensor,
+        protein id corresponding to tensor indices,
+        id for patients corresponding to tensor indices, 
+        TvN corresponding to tensor indices
+    ),
+    (
+        clust_tensor,
+        cluster center number corresponding to tensor indices,
+        id for patients corresponding to tensor indices, 
+        TvN corresponding to tensor indices
+    )
+
+    Additional comments:
+        patients is an union of patients in all 3 datasets
+    """
     path = 'data/'
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
@@ -70,6 +99,29 @@ def generate_tensors():
 
 
 def gen_tensor_matrix():
+    """
+    Generates a 2 tensors which share patient axis:
+        tensor (mRNA vs. Protein ) x (patient) x (gene)
+        matrix (patient) x (cluster center)
+
+    Returns:
+    (
+        tensor,
+        gene symbol corresponding to tensor indices,
+        id for patients corresponding to tensor indices, 
+        MvP corresponding to tensor indices
+    ),
+    (
+        matrix,
+        cluster numbers corresponding to matrix indices,
+        id for patients corresponding to matrix indices, 
+    )
+
+    Additional comments:
+        patients is an intersection of patients in all 3 datasets
+        Because there are possibly multiple proteins to each gene, the first protein found with matching genesymbol is used
+    """
+
     path = 'data/'
 
     #prot import
@@ -113,15 +165,15 @@ def gen_4D_3D_tensors():
     (
         mRNA_prot_tensor,
         gene symbol corresponding to tensor indices,
-        ids for patients corresponding to tensor indices, 
-        ids for TvN corresponding to tensor indices,
-        ids for MvP corresponding to tensor indices
+        id for patients corresponding to tensor indices, 
+        TvN corresponding to tensor indices,
+        MvP corresponding to tensor indices
     ),
     (
        clust_tensor,
         cluster numbers corresponding to tensor indices,
-        ids for patients corresponding to tensor indices, 
-        ids for TvN corresponding to tensor indices,
+        id for patients corresponding to tensor indices, 
+        TvN corresponding to tensor indices,
     )
 
     Additional comments:
@@ -200,9 +252,9 @@ def gen_concat_tensor():
     Returns:
     (
         concatenated tensor (Tumor vs. Normal) x (patients) x (observations),
-        gene ids, protein ids, or cluster numbers corresponding to tensor indices,
-        ids for patients corresponding to tensor indices, 
-        ids for TvN corresponding to tensor indices
+        gene id, protein id, or cluster number corresponding to tensor indices,
+        id for patients corresponding to tensor indices, 
+        TvN corresponding to tensor indices
     )
 
     Additional comments:
