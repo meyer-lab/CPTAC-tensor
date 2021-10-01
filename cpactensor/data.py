@@ -53,7 +53,7 @@ def generate_tensors():
     m_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in mRNA_data.columns])
     p_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in prot_data.columns])
     c_set = set([patient[:-2] if patient[-1] == 'N' else patient for patient in clust_data.columns])
-    patients = sorted(list(m_set.union(p_set, c_set)))
+    patients = sorted(list(m_set.union(p_set, c_set))) #union
 
     # converting patient tumor string to normal
     n_patients = [patient + '.N' for patient in patients]
@@ -141,7 +141,7 @@ def gen_tensor_matrix():
     clust_data = clust_data.T
 
     # generating patient set
-    patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns))))
+    patients = sorted(list(set(mRNA_data.columns).intersection(set(prot_data.columns), set(clust_data.columns)))) # intersection
 
     # generating gene set
     geneSet = list(set(mRNA_data.index).intersection(set(prot_data.index)))
