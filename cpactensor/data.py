@@ -31,7 +31,7 @@ def generate_tensors():
     Additional comments:
         patients is an union of patients in all 3 datasets
     """
-    path = 'data/'
+    path = '../data/'
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
@@ -122,7 +122,7 @@ def gen_tensor_matrix():
         Because there are possibly multiple proteins to each gene, the first protein found with matching genesymbol is used
     """
 
-    path = 'data/'
+    path = '../data/'
 
     #prot import
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
@@ -180,7 +180,7 @@ def gen_4D_3D_tensors():
         patients is an intersection of patients in all 3 datasets
         Because there are possibly multiple proteins to each gene, the first protein found with matching genesymbol is used
     """
-    path = 'data/'
+    path = '../data/'
     clust_data = pd.read_csv(path + 'CPTAC_LUAD_CL24_W15_TMT2_Centers.csv')
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
     mRNA_data = pd.read_csv(path + 'CPTAC_LUAD_RNAseq.csv')
@@ -260,7 +260,7 @@ def gen_concat_tensor():
     Additional comments:
         patients is an union of patients in all 3 datasets
     """
-    path = 'data/'
+    path = '../data/'
 
     #prot import
     prot_data = pd.read_csv(path + 'CPTAC_LUAD_Protein.csv')
