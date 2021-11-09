@@ -1,5 +1,5 @@
 import numpy as np
-from tensorpac import perform_CMTF
+from tensorpack import perform_CMTF
 from .data import gen_tensor_matrix
 
 def decomp_3d_2d():
