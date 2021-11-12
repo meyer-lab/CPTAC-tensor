@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from data import gen_concat_tensor
@@ -6,7 +5,6 @@ from tensorpac import perform_CP, calcR2X
 from statsmodels.multivariate.pca import PCA
 
 # Comparing tensor decomp vs PCA 
-#def pca_vs_tensor():
     
 ### Import data, into Tensor
 (tensor, variables, subjects, TvN) = gen_concat_tensor()
@@ -30,10 +28,12 @@ flatTensor = np.reshape(tensorNoNan, (tensorShape[0]*tensorShape[1] , tensorShap
 num = 300
 idxss = np.random.randint(flatTensor.shape[1], size=num)
 
+# Pull out data corresponding to random index 
 randFlatTensor = flatTensor[:,idxss]
 randTensor = tensorNoNan[:,:,idxss]
 randVars = np.take(variables,idxss)
 
+# Init arrays and components
 comps = np.arange(1,12)
 CPR2X = np.zeros(comps.shape)
 PCAR2X = np.zeros(comps.shape)
@@ -53,6 +53,6 @@ plt.scatter(CPSize, CPR2X, c='blue', label='Tensor')
 plt.scatter(PCASize, PCAR2X, c='red', label='PCA')
 plt.xlabel("Size of reduced data")
 plt.ylabel("R2X")
-plt.title(num, " variables chosen at random")
+plt.title(num)
 plt.legend()
 plt.show()
